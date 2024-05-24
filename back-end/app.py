@@ -64,6 +64,22 @@ def getSongs():
 
     return jsonify(songs['items'], 200)
     
+@app.route('/artists')
+def getArtists():
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    
+    if not authorized:
+        return jsonify({"message": "not logged in", "code": 403})
+    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    range = request.args.get('range')
+    if not range:
+        range = "short_term"
+        
+    artists = sp.current_user_top_artists(limit=50, time_range=range)
+    
+    return jsonify(artists, 200)
 
 def create_oauth():
     return SpotifyOAuth(
