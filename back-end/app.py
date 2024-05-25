@@ -8,7 +8,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 app.config["SESSION_PERMANENT"] = False
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -45,7 +45,10 @@ def redirectPage():
     code = request.args.get('code')
     token_data = sp_auth.get_access_token(code)
     session["token_info"] = token_data
-    return redirect('/songs')
+    if code and token_data:
+        return redirect('http://localhost:5173/songsPage')
+    else:
+        return redirect(url_for("http://localhost:5173/error"))
 
 @app.route('/songs')
 def getSongs():
@@ -53,7 +56,7 @@ def getSongs():
     session.modified = True
     
     if not authorized:
-        return jsonify({"message": "Not logged in", "code": 403})
+        return jsonify({"message": "Not logged in"}, 403)
     
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     range = request.args.get('range') 
@@ -62,7 +65,7 @@ def getSongs():
     
     songs = sp.current_user_top_tracks(limit=50, time_range=range)
 
-    return jsonify(songs['items'], 200)
+    return jsonify({"msg" : "passing"}, 200)
     
 @app.route('/artists')
 def getArtists():
