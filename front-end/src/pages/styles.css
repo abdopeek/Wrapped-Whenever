@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+.playlist p {
+	padding-left: 40px;
+	@media (max-width: 542px) {
+		padding-left: 20px;
+	}
+}
+
+.songs {
+    padding-top: 20px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1224px;
+}   
+.songs .button-wrapper {
+    flex-basis: 100%;
+    text-align: right;
+    padding-bottom: 30px;
+}
+@media (max-width: 542px) {
+    .songs .button-wrapper {
+        margin-bottom: 20px;
+        text-align: left;
+        margin-right: 20px;
+   }
+    .songs .button-wrapper button {
+        margin-left: 20px;
+   }
+}
+    
+body {
+    background: #dedede;
+}
+
+.return-btn {
+    border-radius: 8px;
+    max-height: 91px;
+    margin-left: 68px;
+    margin-top: 35px;
+    font-size: 16px;
+    text-align: center;
+    max-width: none;
+    padding: 0;
+    position: relative;
+    top: -17px;
+}
+
+.returner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

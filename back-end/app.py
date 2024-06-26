@@ -45,8 +45,10 @@ def redirectPage():
     code = request.args.get('code')
     token_data = sp_auth.get_access_token(code)
     session["token_info"] = token_data
+    print(token_data)
+    print("HELLOOOOOO")
     if code and token_data:
-        return redirect('http://localhost:5173/songsPage')
+        return redirect('http://localhost:5173/short_term')
     else:
         return redirect(url_for("http://localhost:5173/error"))
 
@@ -63,9 +65,9 @@ def getSongs():
     if not range:
         range = "short_term"
     
-    songs = sp.current_user_top_tracks(limit=50, time_range=range)
+    songs = sp.current_user_top_tracks(limit=23, time_range=range)
 
-    return jsonify({"msg" : "passing"}, 200)
+    return jsonify({"songs" : songs}, 200)
     
 @app.route('/artists')
 def getArtists():
