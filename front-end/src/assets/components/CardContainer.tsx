@@ -1,3 +1,4 @@
+import ArtistCard from "./ArtistCard";
 import Card from "./Card";
 import "./CardContainer.css";
 import { useState, useEffect, useRef } from "react";
@@ -21,15 +22,22 @@ const CardContainer = ({ cardsData, label }: { cardsData: any, label:any }) => {
 		<div className="card-wrapper">
             <div className="label">{label}</div>
 			<div className="card-container">
-                
-                {cardsData.slice(0, displayCount).map((card: any, index: any) => (
+				
+                {label === "Songs" || label === "Albums" ? cardsData.slice(0, displayCount).map((card: any, index: any) => (
                     <Card
                         key={index}
                         name={card.name}
                         artist={card.artist}
                         image={card.image}
                     />
-                ))}
+                )) : cardsData.slice(0, displayCount).map((card: any, index: any) => (
+					<ArtistCard
+						key={index}
+						name={card.name}
+						image={card.image}
+					/>					
+				))
+			}
 			{displayCount == cardsData.length && (
                 <button onClick={loadLess} className="load-less-btn music">
 					Show less

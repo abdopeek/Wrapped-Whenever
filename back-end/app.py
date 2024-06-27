@@ -5,10 +5,11 @@ from flask_cors import CORS
 import spotipy
 from flask_session import Session
 from spotipy.oauth2 import SpotifyOAuth
+from helper import get_top_albums
 
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 app.config["SESSION_PERMANENT"] = False
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -45,12 +46,10 @@ def redirectPage():
     code = request.args.get('code')
     token_data = sp_auth.get_access_token(code)
     session["token_info"] = token_data
-    print(token_data)
-    print("HELLOOOOOO")
     if code and token_data:
         return redirect('http://localhost:5173/short_term')
     else:
-        return redirect(url_for("http://localhost:5173/error"))
+        return redirect("http://localhost:5173/error")
 
 @app.route('/songs')
 def getSongs():
@@ -58,6 +57,7 @@ def getSongs():
     session.modified = True
     
     if not authorized:
+        print("\n\n user wasnt logged in \n\n")
         return jsonify({"message": "Not logged in"}, 403)
     
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
@@ -75,6 +75,7 @@ def getArtists():
     session.modified = True
     
     if not authorized:
+        print("\n\n user wasnt logged in \n\n")
         return jsonify({"message": "not logged in", "code": 403})
     
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
@@ -82,9 +83,9 @@ def getArtists():
     if not range:
         range = "short_term"
         
-    artists = sp.current_user_top_artists(limit=50, time_range=range)
+    artists = sp.current_user_top_artists(limit=23, time_range=range)
     
-    return jsonify(artists, 200)
+    return jsonify({"artists": artists}, 200)
 
 def create_oauth():
     return SpotifyOAuth(
@@ -111,3 +112,29 @@ def get_token():
         
     valid = True
     return token_data, valid
+
+@app.route('/albums')
+def get_albums():
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    
+    if not authorized:
+        print("\n\n user wasnt logged in \n\n")
+        return jsonify({"message": "not logged in", "code": 403})
+    
+    range = request.args.get('range')
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    
+    if not range:
+        range = "short_term"
+        
+    songs = sp.current_user_top_tracks(limit=50, time_range=range)
+    d = get_top_albums(songs)
+    return jsonify(d, 200)
+    
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    print("logging out \n\n\n\n")
+    return redirect('http://localhost:5173/')

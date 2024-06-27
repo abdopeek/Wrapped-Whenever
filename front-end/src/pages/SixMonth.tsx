@@ -3,6 +3,7 @@ import Loading from "../assets/components/Loading";
 import "./styles.css"
 import CardContainer from "../assets/components/CardContainer";
 import { Navigate, useNavigate } from "react-router-dom";
+import Navbar from "../assets/components/Navbar";
 
 type Songs = {
 	name: string;
@@ -32,13 +33,15 @@ const SixMonth: React.FC = () => {
 	const [artistData, updateArtistData] = useState<Artists[]>([]);
 	const [albumData, updateAlbumData] = useState<Albums[]>([]);
 	
-	const [range, setRange] = useState("short_term")
+	const [range, setRange] = useState<string>("short_term")
 	
 	const backBtn = () => {
 		navigate('/')
 	}
 
+	
 	useEffect(() => {
+		setLoading(true);
 		const checkAuth = async () => {
 			try {
 				const songResponse = await fetch(`http://localhost:5000/songs?range=${range}`, {
@@ -58,14 +61,32 @@ const SixMonth: React.FC = () => {
 					credentials: "include"
 				});
 				var preProcessedArtists = await artistResponse.json();
-				preProcessedArtists = preProcessedArtists["items"];
+				preProcessedArtists = preProcessedArtists[0]["artists"]["items"];
 				const dA : Artists[] = preProcessedArtists.map((artist: any) => ({
 					name: artist["name"],
 					image: artist["images"][1]["url"]
 				}))
 				
+				const albumResponse = await fetch(`http://localhost:5000/albums?range=${range}`, {
+					method: "GET",
+					credentials: "include"
+				});
+				var albumResponsePost = await albumResponse.json();
+				console.log(albumResponsePost)
+				
+				const dAB : Albums[] = albumResponsePost[0].map((album: any) => ({
+					name: album['name'],
+					artist: album['artist'],
+					image: album['image']['url']
+				}))
+				
+				console.log(dAB)
+				
+				
 				// console.log(d[0].image)
 				updateData(dS);
+				updateArtistData(dA);
+				updateAlbumData(dAB);
 				// console.log(data);
 				setIsAuthenticated(true);
 			} catch (error) {
@@ -75,7 +96,7 @@ const SixMonth: React.FC = () => {
 		};
 
 		checkAuth();
-	}, []);
+	}, [range]);
 
 	if (loading) {
 		return <Loading />;
@@ -85,16 +106,22 @@ const SixMonth: React.FC = () => {
 		return (
 			
 		<>
-			<div className="songs">
+			<Navbar setRange={ setRange } setIsAuthenticated={setIsAuthenticated}/>
+			<div className="songs big-container">
 				
 				{songData.length > 0 ? (
-					<CardContainer label={'Songs'} cardsData={songData} />
+					<CardContainer label={"Songs"} cardsData={songData} />
 				) : (
 					<p>No songs available</p>
 				)}
 			</div>
-			<div className="artists">
+			
+			<div className="artists big-container">
 				<CardContainer label={"Artists"} cardsData={artistData} />
+			</div>
+
+			<div className="albums big-container">
+				<CardContainer label={"Albums"} cardsData={albumData} />
 			</div>
 		</>
 		);

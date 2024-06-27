@@ -19,13 +19,13 @@ nav {
     border-radius: 5px;
 }
 
-.songs-btn, .artists-btn {
+.songs-btn, .artists-btn, .albums-btn, .logout-btn {
     transition: all 0.3s ease;
     padding: 10px;
     border-radius: 5px;
 }
 
-.songs-btn:hover, .artists-btn:hover {
+.songs-btn:hover, .artists-btn:hover, .albums-btn:hover, .logout-btn:hover {
     background-color: #cccccc;
     cursor: pointer;
 }
