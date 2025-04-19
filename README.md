@@ -14,8 +14,6 @@ Wrapped Whenever gives you insights into your music listening habits on demand, 
 - View your top tracks, artists, and genres
 - Analyze your listening history
 - Discover your music preferences
-- Visualize listening patterns
-- Generate shareable stats cards
 
 ## 🔍 Project Structure
 
